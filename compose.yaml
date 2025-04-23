@@ -1,0 +1,39 @@
+services:
+  postgres:
+    container_name: postgres-corpo-chat-app
+    image: postgres
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin123
+      PGDATA: /var/lib/postgres/data
+      POSTGRES_DB: corpo_db
+    volumes:
+      - postgres:/data/postgres
+    ports:
+      - 5432:5432
+    networks:
+      - corpo-chat-nw
+    restart: unless-stopped
+
+  keycloak:
+    container_name: keycloak-corpo-app
+    image: quay.io/keycloak/keycloak:26.2
+    ports:
+      - 5433:8080
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: adminkey123
+    networks:
+      - corpo-chat-nw
+    command:
+      - "start-dev"
+    restart: unless-stopped
+
+
+networks:
+  corpo-chat-nw:
+    driver: bridge
+
+volumes:
+  postgres:
+    driver: local
