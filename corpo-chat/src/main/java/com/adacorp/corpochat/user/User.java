@@ -2,10 +2,7 @@ package com.adacorp.corpochat.user;
 
 import com.adacorp.corpochat.chat.Chat;
 import com.adacorp.corpochat.common.BaseAuditingEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +34,7 @@ public class User extends BaseAuditingEntity {
     @OneToMany(mappedBy = "receiver")
     private List<Chat> chatsAsReceiver;
 
+    @Transient
     public boolean isUserOnline(){
         return lastSeen != null && lastSeen.isAfter(LocalDateTime.now().minusMinutes(LAST_ACTIVE_TIME));
     }

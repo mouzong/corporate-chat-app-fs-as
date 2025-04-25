@@ -2,6 +2,8 @@ package com.adacorp.corpochat.chat;
 
 import com.adacorp.corpochat.common.BaseAuditingEntity;
 import com.adacorp.corpochat.message.Message;
+import com.adacorp.corpochat.message.MessageState;
+import com.adacorp.corpochat.message.MessageType;
 import com.adacorp.corpochat.user.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -9,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -34,4 +37,50 @@ public class Chat extends BaseAuditingEntity {
     @OneToMany(mappedBy = "chat", fetch = FetchType.EAGER)
     @OrderBy("createdDate DESC")
     private List<Message> messages;
+
+    @Transient
+    public String getChatName(String senderId){
+        if(receiver.getId().equals(senderId)){
+            return sender.getFirstName() + " " + receiver.getFirstName();
+        }
+        return receiver.getFirstName() + " " + sender.getFirstName();
+    }
+
+    @Transient
+    public String getTargetChatName(String senderId){
+        if(sender.getId().equals(senderId)){
+            return sender.getFirstName() + " " + receiver.getFirstName();
+        }
+        return receiver.getFirstName() + " " + sender.getFirstName();
+    }
+
+    @Transient
+    public long getUnreadMessages(String senderId){
+        return this
+                .messages
+                .stream()
+                .filter(m -> m.getReceiverId().equals(senderId))
+                .filter(m -> MessageState.SENT == m.getState())
+                .count();
+    }
+
+    @Transient
+    public String getLastMessage(){
+        if (messages != null && !messages.isEmpty()){
+            if(messages.getFirst().getType() != MessageType.TEXT){
+                return "Attachment";
+            }
+            return messages.getFirst().getContent();
+        }
+
+        return null;
+    }
+
+    @Transient
+    public LocalDateTime getLastMessageTime(){
+        if (messages != null && !messages.isEmpty()){
+            return messages.getFirst().getCreatedDate();
+        }
+        return null;
+    }
 }
