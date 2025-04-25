@@ -21,6 +21,13 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "chat")
+@NamedQuery(name = ChatConstants.FIND_CHAT_BY_SENDER_ID,
+    query = "SELECT DISTINCT c FROM Chat c WHERE c.sender.id = :senderId OR c.receiver.id = :senderId ORDER BY createdDate DESC"
+)
+
+@NamedQuery(name= ChatConstants.FIND_CHAT_BY_SENDER_ID_AND_RECEIVER,
+            query="SELECT DISTINCT c FROM Chat c WHERE (c.sender.id = :senderId AND c.receiver.id = :receiverId) OR (c.sender.id = :receiverId AND c.receiver.id = :senderId) ORDER BY createdDate DESC "
+)
 public class Chat extends BaseAuditingEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
