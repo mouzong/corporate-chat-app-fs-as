@@ -14,6 +14,14 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "message")
+@NamedQuery(
+        name=MessageConstants.FIND_MESSAGES_BY_CHAT_ID,
+        query = "SELECT m FROM Message m WHERE m.chat.id = :chatId ORDER BY m.createdDate"
+)
+@NamedQuery(
+        name=MessageConstants.SET_MESSAGES_TO_SEEN_BY_CHAT,
+        query = "UPDATE Message  SET state = :newState WHERE chat.id = :chatId"
+)
 public class Message extends BaseAuditingEntity {
     @Id
     @SequenceGenerator(name = "msg_seq", sequenceName = "msg_seq", allocationSize = 1)
